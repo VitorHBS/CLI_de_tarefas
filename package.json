@@ -1,0 +1,16 @@
+{
+  "name": "cli_task",
+  "version": "1.0.0",
+  "description": "sistema de tarefas em linha de comandos do terminal",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx main.ts"
+  },
+  "author": "Vitor",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15"
+  }
+}
