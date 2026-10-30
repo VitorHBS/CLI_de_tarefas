@@ -3,41 +3,53 @@ import fs from "fs"
 
 const hasJsonFile = fs.existsSync('usuario.json')
 
-const jsonFile = fs.readFileSync('usuario.json', 'utf-8');
-const dataJsonFile = JSON.parse(jsonFile)
+let jsonFile = ''
+let dataJsonFile: Array<{ task: string }> = []
+
+
+//verifica se existe o arquivo e transforma em array
+if (hasJsonFile) {
+    jsonFile = fs.readFileSync('usuario.json', 'utf-8');
+    dataJsonFile = JSON.parse(jsonFile)
+} else {
+    const jsonContent = JSON.stringify(dataJsonFile)
+    fs.writeFileSync("usuario.json", jsonContent, "utf8");
+}
+
+
 
 switch (argv[2]) {
 
     case 'list':
-        if (!hasJsonFile) {
-            console.log("Nenhuma lista de tarefas encontrada!")
+
+        if (dataJsonFile.length === 0) {
+            console.log("\n É necessário criar uma tarefa antes de tentar listar")
             break
         }
-        console.log(dataJsonFile)
+
         let list = []
         for (let i = 0; i < dataJsonFile.length; i++) {
 
-            list.push(`Tarefa [${i}]: ${dataJsonFile[i].task}`)
+            list.push(`Tarefa [${i}]: ${dataJsonFile[i].task}\n`)
         }
 
-        console.log("=== MINHAS TAREFAS ===")
+        console.log("\n=== MINHAS TAREFAS ===")
         console.log(list.join('\n'))
 
         break
     case 'add':
 
         const userTask = argv[3]
-        const task = { task: userTask }
-        const arrayVazio: Array<object> = []
 
-        //verifica a existencia do json, se n tiver, cria um
-        if (!hasJsonFile) {
-            const jsonContent = JSON.stringify(arrayVazio)
-            fs.writeFileSync("usuario.json", jsonContent, "utf8");
+        if (typeof (userTask) !== "string" || userTask.trim() === '') {
+            console.log('É necessário escrever alguma tarefa')
+            break
         }
 
-        console.log(`\nTarefa: ${task.task} foi adicionado na lista`)
+        const task = { task: userTask }
+
         dataJsonFile.push(task)
+        console.log(`\nTarefa: ${task.task} foi adicionado na lista`)
 
         //transforma ele novamente em string e salva o arquivo
         const saveContent = JSON.stringify(dataJsonFile)
@@ -48,12 +60,20 @@ switch (argv[2]) {
 
         // Verificar se a lista está vazia
         if (dataJsonFile.length === 0) {
-            console.log("É necessário criar uma tarefa antes de tentar remover")
+            console.log("\n É necessário criar uma tarefa antes de tentar remover")
             break
         }
 
         // Buscar a tarefa pelo índice escolhido pelo usuário
         const indexTask = Number(argv[3]);
+
+        const isInvalidIndex = !Number.isInteger(indexTask) || Number.isNaN(indexTask) || indexTask < 0;
+
+        if (isInvalidIndex) {
+            console.log("\n É necessário escrever um número válido")
+            break
+        }
+
         const hasTask = dataJsonFile[indexTask];
 
         if (!hasTask) {
@@ -69,7 +89,13 @@ switch (argv[2]) {
         break
     case 'done':
         //pega o numero do argv[3] e veirifica qual tarefa tem aquela posição
+        const doneTask = Number(argv[3])
+        const taskToDone = dataJsonFile[doneTask]
+
+
+
         break
+
     default:
         console.log("\n==================================================");
         console.log(" ⚠️  \x1b[31m\x1b[1mOPÇÃO INVÁLIDA\x1b[0m");
