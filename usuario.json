@@ -1,1 +1,18 @@
-[{"task":"sadasdsad"},{"task":"sadasdsad"}]
+[
+  {
+    "task": "escover dentes",
+    "completed": true
+  },
+  {
+    "task": "arrumar a cama",
+    "completed": true
+  },
+  {
+    "task": "estudar programação",
+    "completed": true
+  },
+  {
+    "task": "estudar ingles",
+    "completed": false
+  }
+]

@@ -4,7 +4,7 @@ import fs from "fs"
 const hasJsonFile = fs.existsSync('usuario.json')
 
 let jsonFile = ''
-let dataJsonFile: Array<{ task: string }> = []
+let dataJsonFile: Array<{ task: string, completed: boolean }> = []
 
 
 //verifica se existe o arquivo e transforma em array
@@ -29,8 +29,11 @@ switch (argv[2]) {
 
         let list = []
         for (let i = 0; i < dataJsonFile.length; i++) {
-
-            list.push(`Tarefa [${i}]: ${dataJsonFile[i].task}\n`)
+            if (dataJsonFile[i].completed) {
+                list.push(`Tarefa [${i}]: ${dataJsonFile[i].task} [X]\n`)
+            } else {
+                list.push(`Tarefa [${i}]: ${dataJsonFile[i].task} [ ]\n`)
+            }
         }
 
         console.log("\n=== MINHAS TAREFAS ===")
@@ -46,7 +49,7 @@ switch (argv[2]) {
             break
         }
 
-        const task = { task: userTask }
+        const task = { task: userTask, completed: false }
 
         dataJsonFile.push(task)
         console.log(`\nTarefa: ${task.task} foi adicionado na lista`)
@@ -70,7 +73,7 @@ switch (argv[2]) {
         const isInvalidIndex = !Number.isInteger(indexTask) || Number.isNaN(indexTask) || indexTask < 0;
 
         if (isInvalidIndex) {
-            console.log("\n É necessário escrever um número válido")
+            console.log("\n É necessário digitar um número válido")
             break
         }
 
@@ -88,11 +91,33 @@ switch (argv[2]) {
 
         break
     case 'done':
-        //pega o numero do argv[3] e veirifica qual tarefa tem aquela posição
+
+        //pegar o numero que o user digitou, valido e acho a task com base no numero digitado
         const doneTask = Number(argv[3])
+
+        const isInvalid = !Number.isInteger(doneTask) || Number.isNaN(doneTask) || doneTask < 0;
+
+        if (isInvalid) {
+            console.log("\n É necessário escrever um número válido")
+            break
+        }
+
+        //verificação se existe a task
         const taskToDone = dataJsonFile[doneTask]
+        if (!taskToDone) {
+            console.log("O número da tarefa digitada não existe!")
+            break
+        }
 
+        if (taskToDone.completed) {
+            console.log("A tarefa selecionada já foi concluida");
+            break;
+        }
+        taskToDone.completed = true;
+        console.log(`Você completou a tarefa: ${taskToDone.task}`)
 
+        //salvo as alterações no arquivo json
+        fs.writeFileSync('usuario.json', JSON.stringify(dataJsonFile, null, 2))
 
         break
 
